@@ -1,3 +1,5 @@
+################################ FOR FREQUENCY BASED RECOMMENDATION ################################
+
 user_inputs1 = {
     "space": "Bedroom",
     "mood": "Relaxed and Serene",
@@ -24,3 +26,21 @@ user_inputs3 = {
     "personality": "Analytical",
     "vastu_choice": "No"
 }
+
+################################ FOR WEIGHT BASED RECOMMENDATION ################################
+user_input = {
+    "space" : "Living Room",
+    "mood" : "Bold and Dramatic",
+    "lighting" : "North facing room",
+    "personality" : "Analytical & Practical",
+    "vastu_choice" : "Yes, strictly follow Vaastu",
+    "weights" : {
+        "space": 0.4,
+        "mood": 0.25,
+        "lighting": 0.15,
+        "personality": 0.1,
+        "vaastu": 0.1
+    }
+}
+
+
