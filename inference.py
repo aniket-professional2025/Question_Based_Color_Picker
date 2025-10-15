@@ -75,3 +75,29 @@
 # print("Top 3 Recommended Colors:")
 # for c in top_colors:
 #     print(f"{c['color']} ({c['hex']}) ({c['score']})")
+
+###################### Rule Based Recommendation #####################
+from rule import rule_based_recommendations
+
+user_inputs = {
+    "space": "Living Room",
+    "mood": "Bold and Dramatic",
+    "lighting": "North facing room",
+    "personality": "Analytical",
+    "vastu_choice": "Yes, but flexible",
+    "vastu_direction": "east"
+}
+
+all_colors, top_colors = rule_based_recommendations(**user_inputs, number_of_colors = 3)
+
+print("Top Recommended Colors:")
+print("Number of Colors in Consideration:", len(all_colors))
+print("Unique Colors in Consideration:", len(set(c['name'] for c in all_colors)))
+for c in all_colors:
+    print(f"{c['name']} ({c['hex']})")
+
+print("==========================================================")
+
+print("Top 3 Recommended Colors:")
+for c in top_colors:
+    print(f"{c['name']} ({c['hex']})")
