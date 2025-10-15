@@ -7,7 +7,7 @@ with open("color_data.json", "r") as f:
     color_data = json.load(f)
 
 # Define the Function to get frequency based color recommendations
-def get_recommendations(space: str, mood: str, lighting: str, personality: str, vastu_choice: str, vastu_direction: str = None):
+def get_recommendations(space: str, mood: str, lighting: str, personality: str, vastu_choice: str, number_of_colors: int,  vastu_direction: str = None):
 
     """
     Fetch top 3 recommended colors based on frequency of occurrence.
@@ -67,7 +67,7 @@ def get_recommendations(space: str, mood: str, lighting: str, personality: str, 
 
     # Combine frequencies
     color_counter = Counter([item["name"] for item in all_colors])
-    top_colors = color_counter.most_common(3)
+    top_colors = color_counter.most_common(number_of_colors)
 
     # Prepare output with hex codes
     final_output = []
