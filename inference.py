@@ -103,19 +103,45 @@
 #     print(f"{c['name']} ({c['hex']})")
 
 ####################### Constraint Satisfaction Recommendation #####################
-from constraint import constraint_satisfaction_recommendations
+# from constraint import constraint_satisfaction_recommendations
 
-user_inputs = {
+# user_inputs = {
+#     "space": "Living Room",
+#     "mood": "Bold and Dramatic",
+#     "lighting": "East facing room",
+#     "personality": "Analytical",
+#     "vastu_choice": "Yes, but flexible",
+#     "vastu_direction": "east"
+# }
+
+# all_colors, top_colors = constraint_satisfaction_recommendations(**user_inputs)
+
+# print("All Considered Colors:")
+# print("Number of Colors in Consideration:", len(all_colors))
+# print("Unique Colors in Consideration:", len(set(c['name'] for c in all_colors)))
+# for c in all_colors:
+#     print(f"{c['name']} ({c['hex']})")
+
+# print("==========================================================")
+# print("Top Recommended Colors:")
+# for c in top_colors:
+#     print(f"{c['color']} ({c['hex']})")
+
+
+##################### Multi-Criteria Decision Making (MCDM) ########################
+from mcdm import mcdm_color_recommendations
+
+user_input = {
     "space": "Living Room",
     "mood": "Bold and Dramatic",
     "lighting": "East facing room",
-    "personality": "Analytical",
-    "vastu_choice": "Yes, but flexible",
-    "vastu_direction": "east"
+    "personality": "Practical",
+    "vastu_choice": "Yes, Strictly Follow Vaastu",
 }
 
-all_colors, top_colors = constraint_satisfaction_recommendations(**user_inputs)
+all_colors, top_recommendations = mcdm_color_recommendations(**user_input, number_of_colors = 3)
 
+# Print top recommendations
 print("All Considered Colors:")
 print("Number of Colors in Consideration:", len(all_colors))
 print("Unique Colors in Consideration:", len(set(c['name'] for c in all_colors)))
@@ -123,6 +149,7 @@ for c in all_colors:
     print(f"{c['name']} ({c['hex']})")
 
 print("==========================================================")
-print("Top Recommended Colors:")
-for c in top_colors:
-    print(f"{c['color']} ({c['hex']})")
+
+print("Top 3 Recommended Colors:")
+for c in top_recommendations:
+    print(f"{c['name']} ({c['hex']}) ({c['score']})")
