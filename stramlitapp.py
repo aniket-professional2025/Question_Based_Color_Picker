@@ -8,7 +8,6 @@ from rule import rule_based_recommendations
 from constraint import constraint_satisfaction_recommendations
 
 # Load the json color data
-# NOTE: The color_data.json must be present in the execution environment
 with open("color_data.json", "r") as f:
     color_data = json.load(f)
 
@@ -23,17 +22,17 @@ def display_color_palette(colors, key_prefix):
             # Use HTML to display the color patch name and hex
             st.markdown(
                 f"""
-                <p style="text-align: center; margin-bottom: 5px;font-size: 20px;">
-                    <strong style="font-size: 20px;">{color_name}</strong>
+                <p style="text-align: center; margin-bottom: 5px;font-size: 16px;">
+                    <strong style="font-size: 16px;">{color_name}</strong>
                     <br>
-                    <span style="font-size: 16px;">{hex_code}</span>
+                    <span style="font-size: 15px;">{hex_code}</span>
                 </p>
                 """, unsafe_allow_html=True)
             
             # Use HTML to display the clean color patch
             st.markdown(
                 f"""
-                <div style="background-color:{hex_code}; padding: 60px; border-radius: 5px; text-align: center; border: 1px solid #ccc;">
+                <div style="background-color:{hex_code}; padding: 50px; border-radius: 5px; text-align: center; border: 1px solid #ccc;">
                 </div>
                 """,
                 unsafe_allow_html=True
@@ -42,8 +41,19 @@ def display_color_palette(colors, key_prefix):
 # --- Streamlit Application ---
 
 st.set_page_config(layout = "wide", page_title = "Color Recommendation Systems")
-st.title("🏡 Color Recommendation On User Preference")
-st.markdown("Select your preferences in the sidebar and click **Submit Your Preference** to see the results from five different recommendation algorithms.")
+st.markdown(
+    """
+    <h1 style='
+        font-size: 25px; 
+        color: white; 
+        text-align: center; 
+        margin-bottom: 10px;
+    '>
+        🏡 Color Recommendation On User Preference
+    </h1>
+    """,
+    unsafe_allow_html=True
+)
 
 # Sidebar for User Input
 st.sidebar.header("User Preferences")
@@ -88,8 +98,6 @@ elif vastu_choice == "Yes, but flexible":
     )
     if selected_direction_display != "None (Infer from Lighting)":
         vastu_direction = selected_direction_display.lower()
-# If vastu_choice is "No", nothing is displayed for section 6, which is correct.
-
 
 # 7. Number of Colors
 number_of_colors = st.sidebar.slider("6. Number of Colors to Recommend:", min_value=1, max_value=7, value=3)
@@ -99,94 +107,125 @@ submit_button = st.sidebar.button("Submit Your Preference")
 
 # Main Content Area
 if submit_button:
-    
-    # 1. Frequency Based Result
-    st.header("1. Frequency Based Result 📊")
-    st.markdown("*(Recommend colors based on frequency of occurrence)*")
-    try:
-        _, freq_result = get_recommendations_frequency(
-            space=space, mood=mood, lighting=lighting, personality=personality, 
-            vastu_choice=vastu_choice, vastu_direction=vastu_direction, 
-            number_of_colors=number_of_colors
-        )
-        if freq_result:
-            display_color_palette(freq_result, "freq")
-        else:
-            st.info("No colors found satisfying any criteria.")
-    except Exception as e:
-        st.error(f"Error in Frequency Based Result: {e}")
-        
-    st.markdown("---")
 
-    # 2. Weighted Importance Based Result
-    st.header("2. Weighted Importance Based Result ⚖️")
-    st.markdown("*(Recommend colors based on predefined weights: Space(0.4) > Mood(0.25) > Lighting(0.15) > Personality(0.1) > Vaastu(0.1))*")
-    try:
-        _, weight_result = get_recommendations_weight(
-            space=space, mood=mood, lighting=lighting, personality=personality, 
-            vastu_choice=vastu_choice, vastu_direction=vastu_direction, 
-            number_of_colors=number_of_colors
-        )
-        if weight_result:
-            display_color_palette(weight_result, "weight")
-        else:
-            st.info("No colors found matching any criteria.")
-    except Exception as e:
-        st.error(f"Error in Weighted Importance Based Result: {e}")
+    # Use st.container to group the results and st.columns to create a grid layout
 
-    st.markdown("---")
+    # Create a 3-column layout for the first three results
+    col1, col2_empty, col3 = st.columns(3)
 
-    # 3. Rule Based Result
-    st.header("3. Rule Based Result 📝")
-    st.markdown("*(Recommend colors using Filter based Rule: Lighting → Space → Mood → Personality → Vaastu)*")
-    try:
-        _, rule_result = rule_based_recommendations(
-            space=space, mood=mood, lighting=lighting, personality=personality, 
-            vastu_choice=vastu_choice, vastu_direction=vastu_direction, 
-            number_of_colors=number_of_colors
-        )
-        if rule_result:
-            display_color_palette(rule_result, "rule")
-        else:
-            st.warning("No colors satisfy all sequential rules.")
-    except Exception as e:
-        st.error(f"Error in Rule Based Result: {e}")
+    # 1. Frequency Based Result (Column 1)
+    with col1:
+        # Wrap content in a styled markdown div to apply the border
+        st.markdown(
+    """
+    <h3 style='font-size: 20px; margin-bottom: 0px;'>1. Frequency Based 📊</h3>
+    """,
+    unsafe_allow_html = True)
+        try:
+            _, freq_result = get_recommendations_frequency(
+                space=space, mood=mood, lighting=lighting, personality=personality,
+                vastu_choice=vastu_choice, vastu_direction=vastu_direction,
+                number_of_colors=number_of_colors
+            )
+            if freq_result:
+                display_color_palette(freq_result, "freq")
+            else:
+                st.info("No colors found.")
+        except Exception as e:
+            st.error(f"Error: {e}")
 
-    st.markdown("---")
+    # 2. Weighted Importance Based Result (Column 2)
+    with col3:
+        # Wrap content in a styled markdown div to apply the border
+        st.markdown(
+    """
+    <h3 style='font-size: 20px; margin-bottom: 0px;'>2. Weighted Importance ⚖️</h3>
+    """,
+    unsafe_allow_html = True)
+        try:
+            _, weight_result = get_recommendations_weight(
+                space=space, mood=mood, lighting=lighting, personality=personality,
+                vastu_choice=vastu_choice, vastu_direction=vastu_direction,
+                number_of_colors=number_of_colors
+            )
+            if weight_result:
+                display_color_palette(weight_result, "weight")
+            else:
+                st.info("No colors found.")
+        except Exception as e:
+            st.error(f"Error: {e}")
 
-    # 4. Constraint Based Result (Intersection)
-    st.header("4. Constraint Based Result 🔒")
-    st.markdown("*(Only colors that satisfy **ALL** user preferences simultaneously)*")
-    try:
-        _, constraint_result = constraint_satisfaction_recommendations(
-            space=space, mood=mood, lighting=lighting, personality=personality, 
-            vastu_choice=vastu_choice, vastu_direction=vastu_direction, 
-            number_of_colors=number_of_colors
-        )
-        if constraint_result:
-            display_color_palette(constraint_result, "constraint")
-        else:
-            st.warning("No color satisfies all constraints simultaneously.")
-    except Exception as e:
-        st.error(f"Error in Constraint Based Result: {e}")
+    st.markdown("---")  # Horizontal line to separate sections
 
-    st.markdown("---")
+    # Create a 3-column layout for the remaining two results (leaving the third column empty or for future use)
+    col4, col5_empty, col6 = st.columns(3)
 
-    # 5. Multi-Criteria Decision Making (MCDM) Result
-    st.header("5. Multi-Criteria Decision Making (MCDM) Result 🎯")
-    st.markdown("*(Recommend colors based on the number of criteria they satisfy, all criteria equally weighted)*")
-    try:
-        _, mcdm_result = mcdm_color_recommendations(
-            space=space, mood=mood, lighting=lighting, personality=personality, 
-            vastu_choice=vastu_choice, vastu_direction=vastu_direction, 
-            number_of_colors=number_of_colors
-        )
-        if mcdm_result:
-            display_color_palette(mcdm_result, "mcdm")
-        else:
-            st.info("No colors found matching any criteria.")
-    except Exception as e:
-        st.error(f"Error in MCDM Result: {e}")
+    # 4. Constraint Based Result (Column 1 - Second Row)
+    with col4:
+        # Wrap content in a styled markdown div to apply the border
+        st.markdown(
+    """
+    <h3 style='font-size: 20px; margin-bottom: 0px;'>3. MCDM Based Result 🎯</h3>
+    """,
+    unsafe_allow_html = True)
+        try:
+            _, mcdm_result = mcdm_color_recommendations(
+                space=space, mood=mood, lighting=lighting, personality=personality,
+                vastu_choice=vastu_choice, vastu_direction=vastu_direction,
+                number_of_colors=number_of_colors
+            )
+            if mcdm_result:
+                display_color_palette(mcdm_result, "mcdm")
+            else:
+                st.info("No colors found.")
+        except Exception as e:
+            st.error(f"Error: {e}")
+
+    # 5. Rule Based Result (Column 2 - Second Row)
+    with col6:
+        # Wrap content in a styled markdown div to apply the border
+        st.markdown(
+    """
+    <h3 style='font-size: 20px; margin-bottom: 0px;'>4. Constraint Based 🔒</h3>
+    """,
+    unsafe_allow_html = True)
+        try:
+            _, constraint_result = constraint_satisfaction_recommendations(
+                space=space, mood=mood, lighting=lighting, personality=personality,
+                vastu_choice=vastu_choice, vastu_direction=vastu_direction,
+                number_of_colors=number_of_colors
+            )
+            if constraint_result:
+                display_color_palette(constraint_result, "constraint")
+            else:
+                st.warning("No color satisfies all constraints.")
+        except Exception as e:
+            st.error(f"Error: {e}")
+
+    st.markdown("---")  # Horizontal line to separate sections
+
+    # The next row of columns for Rule Based Result
+    col7, col8_empty, col9 = st.columns(3)
+
+    with col7: 
+        # Wrap content in a styled markdown div to apply the border
+        st.markdown(
+    """
+    <h3 style='font-size: 20px; margin-bottom: 0px;'>5. Rule Based 📝</h3>
+    """,
+    unsafe_allow_html = True)
+        try:
+            _, rule_result = rule_based_recommendations(
+                space=space, mood=mood, lighting=lighting, personality=personality,
+                vastu_choice=vastu_choice, vastu_direction=vastu_direction,
+                number_of_colors=number_of_colors
+            )
+            if rule_result:
+                display_color_palette(rule_result, "rule")
+            else:
+                st.warning("No colors satisfy all rules.")
+        except Exception as e:
+            st.error(f"Error: {e}")
 
 else:
     st.info("Please select your preferences in the sidebar and click **Submit Your Preference** to view the results.")
